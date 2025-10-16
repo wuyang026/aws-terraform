@@ -5,10 +5,6 @@ existing_vpc_id  = "vpc-0af4b08fb5339474e"
 cluster_k8s_version = "1.34"
 environment      = "dev"
 
-# subnet tags (subnet作成する時にtag「karpenter.sh/discovery」の値を設定)
-#例「karpenter.sh/discovery: {project_name}-dev-eks-cluster」
-tag_subnet_value = "go-ph2-00-dev-eks-cluster"
-
 # cluster security group
 cluster_sg_ingress_rules = [
   {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["65.0.72.0/24"]},

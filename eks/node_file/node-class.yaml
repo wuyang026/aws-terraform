@@ -8,8 +8,9 @@ spec:
 
   # Required: Subnet selection for node placement
   subnetSelectorTerms:
-    - tags:
-        karpenter.sh/discovery: "${tag_subnet_value}"
+   %{ for id in private_subnet_ids ~}
+      - id: ${id}
+   %{ endfor ~}
 
   # Required: Security group selection for nodes
   securityGroupSelectorTerms:

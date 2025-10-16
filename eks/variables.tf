@@ -26,11 +26,6 @@ variable "cluster_k8s_version" {
   default     = "1.34"
 }
 
-variable "tag_subnet_value" {
-  description = "subnet tag value"
-  type        = string
-}
-
 variable "instance_cpu" {
   description = "Instance cpus  used to node pools"
   type        = list(string)

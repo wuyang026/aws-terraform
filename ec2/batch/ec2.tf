@@ -1,6 +1,6 @@
 # AWS EC2 Instance Terraform Module
 # Bastion Host - EC2 Instance that will be created in VPC Public Subnet
-module "ec2_complete" {
+module "ec2_batch" {
   # source  = "terraform-aws-modules/ec2-instance/aws" 
   # version = "6.1.2" 
   # sourceローカル化 

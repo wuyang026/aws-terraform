@@ -2,7 +2,6 @@
 locals {
   name                    = "${var.instance_name}-${var.environment}"
   ec2_sg_name             = "${local.name}-terr-sg"
-  vpc_cidr                = data.aws_subnets.private.cidr_blocks
 
   common_tags = {
     owners      = var.instance_name

@@ -6,7 +6,7 @@ module "ec2_complete" {
   # sourceローカル化 
   source  = "./modules/ec2"
 
-  name                   = local.name
+  name                   = var.instance_name
   instance_type          = var.instance_type
   key_name               = var.instance_keypair
   subnet_id              = data.aws_subnets.private_subnets.ids[0]
@@ -23,8 +23,6 @@ module "ec2_complete" {
     AdministratorAccess = "arn:aws:iam::aws:policy/AdministratorAccess"
   }
 
-  user_data_base64 = base64encode(local.user_data)
-
   enable_volume_tags = false
   root_block_device = {
     encrypted  = true
@@ -35,6 +33,6 @@ module "ec2_complete" {
       Name = "my-root-block"
     }
   }
-  
+
   tags = local.common_tags
 }

@@ -1,0 +1,31 @@
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: "${node_pool_name}"
+spec:
+  template:
+    spec:
+      terminationGracePeriod: 48h
+      nodeClassRef:
+        group: eks.amazonaws.com
+        kind: NodeClass
+        name: "${node_class_name}" 
+      requirements:
+        - key: "karpenter.sh/capacity-type"
+          operator: In
+          values: ["${capacity_type}"]
+        - key: "eks.amazonaws.com/instance-category"
+          operator: In
+          values: ["${instance_category}"]
+        - key: "eks.amazonaws.com/instance-cpu"
+          operator: In
+          values: ["${instance_cpu}"]
+        - key: "kubernetes.io/arch"
+          operator: In
+          values: ["${instance_architecture}"]
+  limits:
+    cpu: "1000"
+    memory: 1000Gi
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 30s

@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sample-job
+spec:
+  ttlSecondsAfterFinished: 20
+  activeDeadlineSeconds: 100
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: demo
+        image: busybox
+        command: ["sh", "-c", "echo Hello EKS! && sleep 600"]

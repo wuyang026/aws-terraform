@@ -1,10 +1,16 @@
-# aws region
-aws_region       = "ap-south-1"
-environment      = "dev"
-cluster_name     = "go-ph2-00-dev-eks-cluster"
+# aws
+aws_region            = "ap-south-1"
+environment           = "dev"
+cluster_name          = "go-ph2-00-dev-eks-cluster"
+ec2_iam_role_policies = {
+  eks_cluster_policy      = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+  eks_worker_node_policy  = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+  ecr_readonly_policy     = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
 
 # Eks cluster namespaces
-eks_namespaces  = ["kube-batch","kube-system"]
+# 1番目の namespace がデフォルトに設定されているため、kubectl get pod 実行時に -n を省略できます
+eks_namespaces  = ["kube-system","ph2-batch"]
 
 # ec2 Variables
 instance_name = "go-DACBATS01"

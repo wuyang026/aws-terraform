@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# システム設定
+echo 'export LANG=ja_JP.UTF-8'       | sudo tee -a /etc/bashrc
+echo 'export LC_ALL=ja_JP.UTF-8'     | sudo tee -a /etc/bashrc
+echo 'export HISTTIMEFORMAT="%Y-%m-%d %H:%M:%S "' | sudo tee -a /etc/bashrc
+
 # aws cli v2
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
@@ -48,10 +53,11 @@ else
   echo "${user}:$DEFAULT_PASS" | sudo chpasswd
   sudo chage -d 0 "${user}"
   echo "User ${user} created, password set to default"
-  
+
   # Setup kubeconfig for the user
   echo "Setting up kubeconfig for ${user}..."
   sudo runuser -l "${user}" -c "aws eks update-kubeconfig --region ${aws_region} --name ${eks_cluster_name}"
+  sudo runuser -l "${user}" -c "kubectl config set-context --current --namespace=${default_namespace}"
   echo "Kubeconfig setup done for ${user}"
 fi
 %{ endfor ~}

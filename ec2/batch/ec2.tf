@@ -15,15 +15,11 @@ module "ec2_batch" {
   vpc_security_group_ids = [aws_security_group.eks_cluster_sg.id]
 
   associate_public_ip_address = false
-  create_eip             = false
+  create_eip                  = false
 
   create_iam_instance_profile = true
   iam_role_description        = "IAM role for EC2 instance"
-  iam_role_policies = {
-    eks_cluster_policy = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
-    eks_worker_node_policy = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-    ecr_readonly_policy = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  }
+  iam_role_policies           = ec2_iam_role_policies
 
   enable_volume_tags = false
   root_block_device = {
@@ -38,11 +34,12 @@ module "ec2_batch" {
 
   # kubect, git, eksctl, awsインストール
   user_data = templatefile("${path.module}/user_data/user_data.sh", {
-    admin_username   = var.admin_user
-    default_password = var.default_password
-    normal_users     = var.normal_users
-    region           = var.aws_region
-    cluster_name     = var.cluster_name
+    admin_username    = var.admin_user
+    default_password  = var.default_password
+    normal_users      = var.normal_users
+    region            = var.aws_region
+    cluster_name      = var.cluster_name
+    default_namespace = var.eks_namespaces[0]
   })
 
   tags = local.common_tags

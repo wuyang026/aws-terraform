@@ -73,3 +73,8 @@ variable "eks_namespaces" {
   description = "eks namespaces"
   type        = list(string)
 }
+
+variable "ec2_iam_role_policies" {
+  description = "ec2 iam role policies"
+  type        = map(string)
+}

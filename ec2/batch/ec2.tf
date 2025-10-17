@@ -20,7 +20,9 @@ module "ec2_batch" {
   create_iam_instance_profile = true
   iam_role_description        = "IAM role for EC2 instance"
   iam_role_policies = {
-    AdministratorAccess = "arn:aws:iam::aws:policy/AdministratorAccess"
+    eks_cluster_policy = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+    eks_worker_node_policy = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    ecr_readonly_policy = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   }
 
   enable_volume_tags = false
@@ -30,9 +32,18 @@ module "ec2_batch" {
     throughput = 200
     size       = 50
     tags = {
-      Name = "my-root-block"
+      Name = "${var.instance_name}-gp3"
     }
   }
+
+  # kubect, git, eksctl, awsインストール
+  user_data = templatefile("${path.module}/user_data/user_data.sh", {
+    admin_username   = var.admin_user
+    default_password = var.default_password
+    normal_users     = var.normal_users
+    region           = var.aws_region
+    cluster_name     = var.cluster_name
+  })
 
   tags = local.common_tags
 }

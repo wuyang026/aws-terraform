@@ -1,6 +1,7 @@
 # aws region
 aws_region       = "ap-south-1"
-environment = "dev"
+environment      = "dev"
+cluster_name     = "go-ph2-00-dev-eks-cluster"
 
 # ec2 Variables
 instance_name = "go-DACBATS01"
@@ -15,3 +16,9 @@ ec2_sg_ingress_rules = [
   {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["65.0.72.0/24"]},
   {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["192.178.0.0/24"]}
 ]
+
+# user setting 
+# 各ユーザーが初回ログインする際に、パスワードの変更を求められるように設定する
+admin_user = "admin"
+normal_users   = ["tis-user","other-user"]
+default_password = "P@ssword123"

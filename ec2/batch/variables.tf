@@ -48,3 +48,23 @@ variable "ec2_sg_ingress_rules" {
   }))
   default = []
 }
+
+variable "admin_user" {
+  description = "admin username"
+  type        = string
+}
+
+variable "default_password" {
+  description = "default password"
+  type        = string
+}
+
+variable "normal_users" {
+  description = "normal usernames"
+  type        = list(string)
+}
+
+variable "cluster_name" {
+  description = "cluster name"
+  type        = string
+}

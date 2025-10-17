@@ -1,4 +1,4 @@
-resource "aws_security_group" "eks_cluster_sg" {
+resource "aws_security_group" "ek2_batch_sg" {
   name        = "${local.ec2_sg_name}"
   vpc_id      = var.existing_vpc_id
   description = "ec2 Security Group"

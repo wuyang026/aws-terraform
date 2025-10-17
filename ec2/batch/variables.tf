@@ -78,3 +78,19 @@ variable "ec2_iam_role_policies" {
   description = "ec2 iam role policies"
   type        = map(string)
 }
+
+variable "device_encrypted" {
+  description = "device encrypted"
+  type        = bool
+  default     = false
+}
+
+variable "device_type" {
+  description = "device type"
+  type        = string
+}
+
+variable "device size" {
+  description = "device size"
+  type        = number
+}

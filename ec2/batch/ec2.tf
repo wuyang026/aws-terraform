@@ -23,16 +23,16 @@ module "ec2_batch" {
 
   enable_volume_tags = false
   root_block_device = {
-    encrypted  = true
-    type       = "gp3"
+    encrypted  = var.device_encrypted
+    type       = var.device_type
     throughput = 200
-    size       = 50
+    size       = var.device_size
     tags = {
       Name = "${var.instance_name}-gp3"
     }
   }
 
-  # kubect, git, eksctl, awsインストール
+  # 初期設定
   user_data = templatefile("${path.module}/user_data/user_data.sh", {
     admin_username    = var.admin_user
     default_password  = var.default_password

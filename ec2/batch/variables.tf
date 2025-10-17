@@ -68,3 +68,8 @@ variable "cluster_name" {
   description = "cluster name"
   type        = string
 }
+
+variable "eks_namespaces" {
+  description = "eks namespaces"
+  type        = list(string)
+}

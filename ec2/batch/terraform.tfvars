@@ -3,6 +3,9 @@ aws_region       = "ap-south-1"
 environment      = "dev"
 cluster_name     = "go-ph2-00-dev-eks-cluster"
 
+# Eks cluster namespaces
+eks_namespaces  = ["kube-batch","kube-system"]
+
 # ec2 Variables
 instance_name = "go-DACBATS01"
 instance_type = "m7i.large"

@@ -12,14 +12,14 @@ module "ec2_batch" {
   subnet_id              = data.aws_subnets.private_subnets.ids[0]
 
   create_security_group = false
-  vpc_security_group_ids = [aws_security_group.eks_cluster_sg.id]
+  vpc_security_group_ids = [aws_security_group.ek2_batch_sg.id]
 
   associate_public_ip_address = false
   create_eip                  = false
 
   create_iam_instance_profile = true
   iam_role_description        = "IAM role for EC2 instance"
-  iam_role_policies           = ec2_iam_role_policies
+  iam_role_policies           = var.ec2_iam_role_policies
 
   enable_volume_tags = false
   root_block_device = {
@@ -37,8 +37,8 @@ module "ec2_batch" {
     admin_username    = var.admin_user
     default_password  = var.default_password
     normal_users      = var.normal_users
-    region            = var.aws_region
-    cluster_name      = var.cluster_name
+    aws_region        = var.aws_region
+    eks_cluster_name  = var.cluster_name
     default_namespace = var.eks_namespaces[0]
   })
 

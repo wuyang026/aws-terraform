@@ -26,22 +26,16 @@ curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$
 tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
 sudo install -m 0755 /tmp/eksctl /usr/local/bin && rm /tmp/eksctl
 
-# ==== 変数 ====
-ADMIN_USER="${admin_username}"
-DEFAULT_PASS="${default_password}"
-REGION="${region}"
-CLUSTER_NAME="${cluster_name}"
-
 # ==== 管理者ユーザー作成 ====
-echo "Creating user $ADMIN_USER ..."
-sudo useradd -m -s /bin/bash "$ADMIN_USER"
-echo "$ADMIN_USER:$DEFAULT_PASS" | sudo chpasswd
-sudo chage -d 0 "$ADMIN_USER"
-sudo usermod -aG wheel "$ADMIN_USER"
+echo "Creating user ${admin_username} ..."
+sudo useradd -m -s /bin/bash "${admin_username}"
+echo "${admin_username}:${default_password}" | sudo chpasswd
+sudo chage -d 0 "${admin_username}"
+sudo usermod -aG wheel "${admin_username}"
 
-echo "$ADMIN_USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/admin_nopasswd
+echo "${admin_username} ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/admin_nopasswd
 sudo chmod 0440 /etc/sudoers.d/admin_nopasswd
-echo "User $ADMIN_USER created, password set to default"
+echo "User ${admin_username} created, password set to default"
 
 # ==== 一般ユーザー作成 ====
 %{ for user in normal_users ~}
@@ -50,7 +44,7 @@ if id "${user}" &>/dev/null; then
 else
   echo "Creating user ${user} ..."
   sudo useradd -m -s /bin/bash "${user}"
-  echo "${user}:$DEFAULT_PASS" | sudo chpasswd
+  echo "${user}:${default_password}" | sudo chpasswd
   sudo chage -d 0 "${user}"
   echo "User ${user} created, password set to default"
 

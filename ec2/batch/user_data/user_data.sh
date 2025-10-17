@@ -48,6 +48,11 @@ else
   echo "${user}:$DEFAULT_PASS" | sudo chpasswd
   sudo chage -d 0 "${user}"
   echo "User ${user} created, password set to default"
+  
+  # Setup kubeconfig for the user
+  echo "Setting up kubeconfig for ${user}..."
+  sudo runuser -l "${user}" -c "aws eks update-kubeconfig --region ${aws_region} --name ${eks_cluster_name}"
+  echo "Kubeconfig setup done for ${user}"
 fi
 %{ endfor ~}
 

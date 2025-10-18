@@ -8,8 +8,13 @@ ec2_iam_role_policies = {
   ecr_readonly_policy     = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
-# Eks cluster namespaces
-# 1番目の namespace がデフォルトに設定されているため、kubectl get pod 実行時に -n を省略できます
+# Eks cluster access entry
+# access typeは「cluster,namespace」設定可能です
+# namespaceを設定すると、eks_namespacesの指定が必要です
+eks_access_type = "namespace"
+
+# eks_access_type に "namespace" を指定し、eks_namespaces を設定することで、EC2は指定されたnamespaceのみにアクセスが制限されます
+# eks_access_type に "cluster" を指定しつつ、eks_namespaces に kubectl get pod のデフォルトnamespace(1番目)を設定することも可能です
 eks_namespaces  = ["kube-system","ph2-batch"]
 
 # ec2 Variables

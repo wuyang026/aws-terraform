@@ -39,7 +39,7 @@ module "ec2_batch" {
     normal_users      = var.normal_users
     aws_region        = var.aws_region
     eks_cluster_name  = var.cluster_name
-    default_namespace = var.eks_namespaces[0]
+    default_namespace = length(var.eks_namespaces) > 0 ? var.eks_namespaces[0] : ""
   })
 
   tags = local.common_tags

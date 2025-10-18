@@ -10,8 +10,8 @@ resource "aws_eks_access_policy_association" "ec2_batch_access" {
   principal_arn = module.ec2_batch.iam_role_arn
 
   access_scope {
-    type = "namespace"
-    namespaces = var.eks_namespaces
+    type = var.eks_access_type
+    namespaces = var.eks_access_type == "namespace" ? var.eks_namespaces : null
   }
 
   depends_on = [aws_eks_access_entry.ec2_batch_auto_entry]

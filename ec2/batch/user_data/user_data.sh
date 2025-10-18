@@ -51,7 +51,9 @@ else
   # Setup kubeconfig for the user
   echo "Setting up kubeconfig for ${user}..."
   sudo runuser -l "${user}" -c "aws eks update-kubeconfig --region ${aws_region} --name ${eks_cluster_name}"
-  sudo runuser -l "${user}" -c "kubectl config set-context --current --namespace=${default_namespace}"
+  if [ -n "${default_namespace}" ]; then
+      sudo runuser -l "${user}" -c "kubectl config set-context --current --namespace=${default_namespace}"
+  fi
   echo "Kubeconfig setup done for ${user}"
 fi
 %{ endfor ~}

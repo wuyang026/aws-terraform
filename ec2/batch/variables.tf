@@ -90,7 +90,7 @@ variable "device_type" {
   type        = string
 }
 
-variable "device size" {
+variable "device_size" {
   description = "device size"
   type        = number
 }

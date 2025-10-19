@@ -8,7 +8,6 @@ module "ec2_batch" {
 
   name                   = var.instance_name
   instance_type          = var.instance_type
-  key_name               = var.instance_keypair
   subnet_id              = data.aws_subnets.private_subnets.ids[0]
 
   create_security_group = false

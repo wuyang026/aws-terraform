@@ -1,28 +1,10 @@
 # aws
 aws_region            = "ap-south-1"
 environment           = "dev"
-cluster_name          = "go-ph2-00-dev-eks-cluster"
-ec2_iam_role_policies = {
-  eks_cluster_policy      = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
-  eks_worker_node_policy  = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-  ecr_readonly_policy     = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-}
-
-# Eks cluster access entry
-eks_access_policy = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-
-# access typeは「cluster,namespace」設定可能です
-# namespaceを設定すると、eks_namespacesの指定が必要です
-eks_access_type = "namespace"
-
-# eks_access_type に "namespace" を指定し、eks_namespaces を設定することで、EC2は指定されたnamespaceのみにアクセスが制限されます
-# eks_access_type に "cluster" を指定しつつ、eks_namespaces に kubectl get pod のデフォルトnamespace(1番目)を設定することも可能です
-eks_namespaces  = ["kube-system","ph2-batch"]
 
 # ec2 Variables
 instance_name = "go-DACBATS01"
 instance_type = "m7i.large"
-instance_keypair = "go-ap-south-1"
 # system storage
 system_device_encrypted  = true
 system_device_type       = "gp3"
@@ -42,3 +24,22 @@ ec2_sg_ingress_rules = [
 admin_user = "admin"
 normal_users   = ["tis-user","other-user"]
 default_password = "P@ssword123"
+
+# 「cluster_name = ""」を指定すると、クラスタにアクセスの設定を行わない
+cluster_name          = "go-ph2-00-dev-eks-cluster"
+ec2_iam_role_policies = {
+  eks_cluster_policy      = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+  eks_worker_node_policy  = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+  ecr_readonly_policy     = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+# Eks cluster access entry
+eks_access_policy = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+# access typeは「cluster,namespace」設定可能です
+# namespaceを設定すると、eks_namespacesの指定が必要です
+eks_access_type = "namespace"
+
+# eks_access_type に "namespace" を指定し、eks_namespaces を設定することで、EC2は指定されたnamespaceのみにアクセスが制限されます
+# eks_access_type に "cluster" を指定しつつ、eks_namespaces に kubectl get pod のデフォルトnamespace(1番目)を設定することも可能です
+eks_namespaces  = ["kube-system","ph2-batch"]

@@ -69,6 +69,11 @@ variable "cluster_name" {
   type        = string
 }
 
+variable "eks_access_policy" {
+  description = "eks access policy"
+  type        = string
+}
+
 variable "eks_access_type" {
   description = "eks access type"
   type        = string

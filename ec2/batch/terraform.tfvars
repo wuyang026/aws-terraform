@@ -9,6 +9,8 @@ ec2_iam_role_policies = {
 }
 
 # Eks cluster access entry
+eks_access_policy = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
 # access typeは「cluster,namespace」設定可能です
 # namespaceを設定すると、eks_namespacesの指定が必要です
 eks_access_type = "namespace"

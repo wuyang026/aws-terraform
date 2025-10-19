@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 # システム設定
 echo 'export LANG=ja_JP.UTF-8'       | sudo tee -a /etc/bashrc

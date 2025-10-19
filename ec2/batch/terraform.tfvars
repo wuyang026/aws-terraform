@@ -33,7 +33,7 @@ ec2_iam_role_policies = {
   ecr_readonly_policy     = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
-# Eks cluster access entry
+# eks cluster access entry
 eks_access_policy = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
 
 # access typeは「cluster,namespace」設定可能です

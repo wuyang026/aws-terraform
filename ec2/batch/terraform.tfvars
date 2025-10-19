@@ -5,12 +5,12 @@ environment           = "dev"
 # ec2 Variables
 instance_name = "go-DACBATS01"
 instance_type = "m7i.large"
-# system storage
+# ec2 system storage (ebs)
 system_device_encrypted  = true
 system_device_type       = "gp3"
 system_device_size       = 30
 
-# vpc
+# ec2 vpc
 existing_vpc_id  = "vpc-04bdd21020ddba9bc"
 
 # ec2 security group

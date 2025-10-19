@@ -23,10 +23,10 @@ eks_namespaces  = ["kube-system","ph2-batch"]
 instance_name = "go-DACBATS01"
 instance_type = "m7i.large"
 instance_keypair = "go-ap-south-1"
-# root_device
-device_encrypted  = true
-device_type       = "gp3"
-device_size       = 50
+# system storage
+system_device_encrypted  = true
+system_device_type       = "gp3"
+system_device_size       = 30
 
 # vpc
 existing_vpc_id  = "vpc-04bdd21020ddba9bc"

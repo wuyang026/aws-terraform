@@ -89,18 +89,18 @@ variable "ec2_iam_role_policies" {
   type        = map(string)
 }
 
-variable "device_encrypted" {
-  description = "device encrypted"
+variable "system_device_encrypted" {
+  description = "system device encrypted"
   type        = bool
   default     = false
 }
 
-variable "device_type" {
-  description = "device type"
+variable "system_device_type" {
+  description = "system device type"
   type        = string
 }
 
-variable "device_size" {
-  description = "device size"
+variable "system_device_size" {
+  description = "system device size"
   type        = number
 }

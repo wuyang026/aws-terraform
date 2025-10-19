@@ -22,13 +22,13 @@ module "ec2_batch" {
   iam_role_policies           = var.ec2_iam_role_policies
 
   enable_volume_tags = false
+  # システムストレージ
   root_block_device = {
-    encrypted  = var.device_encrypted
-    type       = var.device_type
-    throughput = 200
-    size       = var.device_size
+    encrypted  = var.system_device_encrypted
+    type       = var.system_device_type
+    size       = var.system_device_size
     tags = {
-      Name = "${var.instance_name}-gp3"
+      Name = "${var.instance_name}-root-block-device"
     }
   }
 

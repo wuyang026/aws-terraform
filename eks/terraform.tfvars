@@ -8,10 +8,7 @@ environment      = "dev"
 # cluster security group
 cluster_sg_ingress_rules = [
   {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["65.0.72.0/24"]},
-  {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["192.168.0.0/24"]},
-  {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["192.168.8.0/24"]},
-  {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["192.168.9.0/24"]},
-  {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["192.168.10.0/24"]},
+  {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["192.168.0.0/24"]}
 ]
 
 # node security group tags (security group作成する時にtagを設定)

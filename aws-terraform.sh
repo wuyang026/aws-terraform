@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -e
+
 usage() {
   echo "Usage: $0 [init|plan|apply|destroy|all]"
   echo "  default: all (init + plan + apply)"

@@ -1,6 +1,11 @@
 # EKS Cluster Outputs
+output "cluster_name" {
+  description = "The name of the EKS cluster."
+  value       = module.eks.cluster_name
+}
+
 output "cluster_id" {
-  description = "The name/id of the EKS cluster."
+  description = "The id of the EKS cluster."
   value       = module.eks.cluster_id
 }
 

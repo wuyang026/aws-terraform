@@ -36,7 +36,7 @@ resource "aws_eks_pod_identity_association" "efs_csi" {
 resource "aws_eks_addon" "efs_csi" {
   cluster_name             = module.eks.cluster_name
   addon_name               = "aws-efs-csi-driver"
-  addon_version            = var.efs_csi_driver_version
+  addon_version            = data.aws_eks_addon_version.efs_csi.version
   service_account_role_arn = module.aws_efs_csi_pod_identity.iam_role_arn
   resolve_conflicts_on_update = "OVERWRITE"
 
@@ -44,4 +44,41 @@ resource "aws_eks_addon" "efs_csi" {
     Name = "efs-csi-addon"
   }
   depends_on = [aws_eks_pod_identity_association.efs_csi]
+}
+
+# AWS CloudWatch Observability
+module "aws_cloudwatch_observability_pod_identity" {
+  #source = "terraform-aws-modules/eks-pod-identity/aws"
+
+  #sourceローカル化
+  source = "./modules/aws_efs_csi_pod_identity/"
+
+  name = "${module.eks.cluster_name}-cloudwatch-observability-role"
+
+  additional_policy_arns = {
+      CloudWatchAgentServerPolicy = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+      AWSXrayWriteOnlyAccess      = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
+  }
+  depends_on = [time_sleep.node_create]
+}
+
+resource "aws_eks_pod_identity_association" "cloudwatch_observability" {
+  cluster_name    = module.eks.cluster_name
+  namespace       = "kube-system"
+  service_account = "cloudwatch-observability-sa"
+  role_arn        =  module.aws_cloudwatch_observability_pod_identity.iam_role_arn
+  depends_on = [module.aws_cloudwatch_observability_pod_identity.iam_role_arn]
+}
+
+resource "aws_eks_addon" "cloudwatch_observability" {
+  cluster_name             = module.eks.cluster_name
+  addon_name               = "amazon-cloudwatch-observability"
+  addon_version            = data.aws_eks_addon_version.cloudwatch_observability.version
+  service_account_role_arn = module.aws_cloudwatch_observability_pod_identity.iam_role_arn
+  resolve_conflicts_on_update = "OVERWRITE"
+
+  tags = {
+    Name = "cloudwatch_observability-addon"
+  }
+  depends_on = [aws_eks_pod_identity_association.cloudwatch_observability]
 }

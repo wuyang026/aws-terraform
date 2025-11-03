@@ -25,6 +25,9 @@ curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$
 tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
 sudo install -m 0755 /tmp/eksctl /usr/local/bin && rm /tmp/eksctl
 
+# helm
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
 # ==== 管理者ユーザー作成 ====
 echo "Creating user ${admin_username} ..."
 sudo useradd -m -s /bin/bash "${admin_username}"

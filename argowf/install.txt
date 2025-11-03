@@ -1,0 +1,122 @@
+# argowf install
+kubectl create namespace argowf
+kubectl apply -n argowf -f https://github.com/argoproj/argo-workflows/releases/download/v3.7.2/install.yaml
+
+# argowf login setting
+kubectl patch svc argo-server -n argowf -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl patch deployment argo-server -n argowf   --type='json'   -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/readinessProbe/httpGet/scheme", "value":"HTTP"}]'
+kubectl patch deployment argo-server -n argowf   --type='json'   -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/args", "value":["server","--auth-mode=server","--auth-mode=client","--secure=false"]}]'
+
+#service account role
+argo-rbac.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argo-workflowtaskresults
+  namespace: argowf
+rules:
+- apiGroups:
+  - argoproj.io
+  resources:
+  - workflowtaskresults
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argo-workflowtaskresults-binding
+  namespace: argowf
+subjects:
+- kind: ServiceAccount
+  name: argo
+  namespace: argowf
+roleRef:
+  kind: Role
+  name: argo-workflowtaskresults
+  apiGroup: rbac.authorization.k8s.io
+
+#batch
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: exitcode-conditional-
+  namespace: argowf
+spec:
+  entrypoint: main
+  serviceAccountName: argo
+  templates:
+
+  - name: main
+    steps:
+    - - name: run-job
+        template: run-job
+
+    - - name: handle-success
+        template: success-step
+        when: "{{steps.run-job.outputs.parameters.exit-code}} == 0"
+
+      - name: handle-failure
+        template: failure-step
+        when: "{{steps.run-job.outputs.parameters.exit-code}} == 1"
+
+      - name: handle-warning
+        template: warning-step
+        when: "{{steps.run-job.outputs.parameters.exit-code}} == 2"
+
+  - name: run-job
+    retryStrategy:
+      limit: 3
+      retryPolicy: "OnError"
+      backoff:
+        duration: "10s"
+        factor: 2
+        maxDuration: "1m"
+    script:
+      image: alpine
+      command: [sh]
+      source: |
+        exit_code=$((RANDOM % 3)) # 0,1,2
+        echo "Simulated exit code: $exit_code"
+        echo $exit_code > /tmp/exitcode.txt
+        if [ "$exit_code" -eq 1 ]; then
+          echo "Job failed, triggering retry..."
+          exit 1
+        fi
+        #exit $exit_code
+    outputs:
+      parameters:
+      - name: exit-code
+        valueFrom:
+          path: /tmp/exitcode.txt
+
+  - name: success-step
+    script:
+      image: alpine
+      command: [sh]
+      source: |
+        echo "Executing step A for exit code 0"
+        exit 0
+
+  - name: failure-step
+    script:
+      image: alpine
+      command: [sh]
+      source: |
+        echo "Executing step B for exit code 1 (will fail)"
+        exit 1
+
+  - name: warning-step
+    script:
+      image: alpine
+      command: [sh]
+      source: |
+        echo "Executing step C for exit code 2 (but exit 0 to succeed)"
+        exit 0

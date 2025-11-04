@@ -1,0 +1,15 @@
+# efs csi driver
+kubectl scale deploy efs-csi-controller -n kube-system --replicas=0
+kubectl patch ds efs-csi-node -n kube-system -p '{"spec":{"template":{"spec":{"nodeSelector":{"non-existent":"true"}}}}}'
+
+kubectl scale deploy efs-csi-controller -n kube-system --replicas=1
+kubectl patch ds efs-csi-node -n kube-system --type merge -p '{"spec":{"template":{"spec":{"nodeSelector":null}}}}'
+
+
+kubectl scale deploy amazon-cloudwatch-observability-controller-manager -n amazon-cloudwatch --replicas=0
+kubectl patch ds cloudwatch-agent -n amazon-cloudwatch -p '{"spec":{"template":{"spec":{"nodeSelector":{"non-existent":"true"}}}}}'
+kubectl patch ds fluent-bit -n amazon-cloudwatch -p '{"spec":{"template":{"spec":{"nodeSelector":{"non-existent":"true"}}}}}'
+
+kubectl scale deploy amazon-cloudwatch-observability-controller-manager -n amazon-cloudwatch --replicas=1
+kubectl patch ds cloudwatch-agent -n amazon-cloudwatch -p '{"spec":{"template":{"spec":{"nodeSelector":null}}}}'
+kubectl patch ds fluent-bit -n amazon-cloudwatch -p '{"spec":{"template":{"spec":{"nodeSelector":null}}}}'

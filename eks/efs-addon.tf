@@ -64,7 +64,7 @@ module "aws_cloudwatch_observability_pod_identity" {
 
 resource "aws_eks_pod_identity_association" "cloudwatch_observability" {
   cluster_name    = module.eks.cluster_name
-  namespace       = "kube-system"
+  namespace       = "amazon-cloudwatch"
   service_account = "cloudwatch-observability-sa"
   role_arn        =  module.aws_cloudwatch_observability_pod_identity.iam_role_arn
   depends_on = [module.aws_cloudwatch_observability_pod_identity.iam_role_arn]

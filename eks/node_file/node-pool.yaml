@@ -24,8 +24,8 @@ spec:
           operator: In
           values: ["${instance_architecture}"]
   limits:
-    cpu: "1000"
-    memory: 1000Gi
+    cpu: "256"
+    memory: 512Gi
   disruption:
     consolidationPolicy: WhenEmptyOrUnderutilized
     consolidateAfter: 30s

@@ -8,12 +8,12 @@ environment      = "dev"
 # cluster security group
 cluster_sg_ingress_rules = [
   {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["65.0.72.0/24"]},
-  {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["192.168.0.0/24"]}
+  {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["192.168.0.0/20"]}
 ]
 
 # node security group tags (security group作成する時にtagを設定)
 node_sg_ingress_rules = [
-  {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["192.168.0.0/24"]}
+  {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["192.168.0.0/20"]}
 ]
 
 # public endpoint access cidrs
@@ -24,6 +24,6 @@ efs_csi_driver_version = "v2.1.13-eksbuild.1"
 
 # node pool Variables
 instance_architecture = ["amd64","arm64"]
-capacity_type = ["SPOT","on-demand"]
-instance_cpu = ["2","4","8"]
+capacity_type = ["spot","on-demand"]
+instance_cpu = ["2","4","8","16"]
 instance_category = ["t","c","m","r"]

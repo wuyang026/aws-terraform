@@ -38,6 +38,7 @@ module "ec2_batch" {
     normal_users      = var.normal_users
     aws_region        = var.aws_region
     eks_cluster_name  = var.cluster_name
+    # eks_cluster_name  = try(data.terraform_remote_state.eks.outputs.cluster_name, "") != "" ? data.terraform_remote_state.eks.outputs.cluster_name : ""
     default_namespace = length(var.eks_namespaces) > 0 ? var.eks_namespaces[0] : ""
   })
 

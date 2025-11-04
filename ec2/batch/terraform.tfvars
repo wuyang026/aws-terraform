@@ -16,7 +16,7 @@ existing_vpc_id  = "vpc-0af4b08fb5339474e"
 # ec2 security group
 ec2_sg_ingress_rules = [
   {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["65.0.72.0/24"]},
-  {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["192.168.0.0/24"]}
+  {description = "",from_port = 0,to_port = 0,protocol = "-1",cidr_blocks = ["192.168.0.0/20"]}
 ]
 
 # user setting 

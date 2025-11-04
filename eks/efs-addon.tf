@@ -53,7 +53,7 @@ module "aws_cloudwatch_observability_pod_identity" {
   #sourceローカル化
   source = "./modules/aws_efs_csi_pod_identity/"
 
-  name = "${module.eks.cluster_name}-cloudwatch-observability-role"
+  name = "${module.eks.cluster_name}-obs-role"
 
   additional_policy_arns = {
       CloudWatchAgentServerPolicy = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
@@ -65,7 +65,7 @@ module "aws_cloudwatch_observability_pod_identity" {
 resource "aws_eks_pod_identity_association" "cloudwatch_observability" {
   cluster_name    = module.eks.cluster_name
   namespace       = "amazon-cloudwatch"
-  service_account = "cloudwatch-observability-sa"
+  service_account = "cloudwatch-agent"
   role_arn        =  module.aws_cloudwatch_observability_pod_identity.iam_role_arn
   depends_on = [module.aws_cloudwatch_observability_pod_identity.iam_role_arn]
 }

@@ -1,11 +1,15 @@
 # argowf install
-kubectl create namespace argowf
-kubectl apply -n argowf -f https://github.com/argoproj/argo-workflows/releases/download/v3.7.2/install.yaml
+kubectl create namespace argo
+kubectl apply -n argo -f https://github.com/argoproj/argo-workflows/releases/download/v3.7.2/install.yaml
 
 # argowf login setting
-kubectl patch svc argo-server -n argowf -p '{"spec": {"type": "LoadBalancer"}}'
-kubectl patch deployment argo-server -n argowf   --type='json'   -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/readinessProbe/httpGet/scheme", "value":"HTTP"}]'
-kubectl patch deployment argo-server -n argowf   --type='json'   -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/args", "value":["server","--auth-mode=server","--auth-mode=client","--secure=false"]}]'
+kubectl patch svc argo-server -n argo -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl patch deployment argo-server -n argo   --type='json'   -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/readinessProbe/httpGet/scheme", "value":"HTTP"}]'
+kubectl patch deployment argo-server -n argo   --type='json'   -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/args", "value":["server","--auth-mode=server","--auth-mode=client","--secure=false"]}]'
+
+kubectl edit deployment argo-server -n argo
+kubectl rollout status deploy/argo-server -n argo
+
 
 #service account role
 argo-rbac.yaml
@@ -14,7 +18,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: argo-workflowtaskresults
-  namespace: argowf
+  namespace: argo
 rules:
 - apiGroups:
   - argoproj.io
@@ -33,11 +37,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: argo-workflowtaskresults-binding
-  namespace: argowf
+  namespace: argo
 subjects:
 - kind: ServiceAccount
   name: argo
-  namespace: argowf
+  namespace: argo
 roleRef:
   kind: Role
   name: argo-workflowtaskresults
@@ -48,7 +52,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: exitcode-conditional-
-  namespace: argowf
+  namespace: argo
 spec:
   entrypoint: main
   serviceAccountName: argo
@@ -126,7 +130,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: CronWorkflow
 metadata:
   name: exitcode-conditional
-  namespace: argowf
+  namespace: argo
 spec:
   schedule: "*/5 * * * *"          # Run every 5 minutes
   timeZone: "Asia/Tokyo"           # Set timezone (use Asia/Shanghai if in China)

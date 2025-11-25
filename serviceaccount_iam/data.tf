@@ -1,12 +1,16 @@
-data "aws_s3_object" "eks_endpoint" {
-  bucket = var.s3_bucket
-  key    = var.endpoint_key
+data "terraform_remote_state" "eks" {
+  backend = "s3"
+  config = {
+    bucket         = var.bucket
+    key            = var.key
+    region         = var.aws_region
+  }
 }
 
 data "aws_eks_cluster" "cluster" {
-  name = var.cluster_name
+  name = data.terraform_remote_state.eks.outputs.cluster_name
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = var.cluster_name
+  name = data.terraform_remote_state.eks.outputs.cluster_name
 }

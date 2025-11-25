@@ -1,8 +1,8 @@
-variable "irsa_list" {
+variable "roles" {
   type = list(object({
-    name            = string
-    namespace       = string
-    service_account = string
-    iam_role_arn    = string
+    name        = string
+    policy_arns = list(string)
+    sa_name     = string
+    namespace   = string
   }))
 }

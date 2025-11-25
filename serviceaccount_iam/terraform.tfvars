@@ -1,20 +1,23 @@
-irsa_list = [
+roles = [
   {
-    name            = "external-dns"
-    namespace       = "dns"
-    service_account = "external-dns"
-    iam_role_arn    = "arn:aws:iam::123456789012:role/external-dns-role"
+    name        = "role-argo"
+    policy_arns = ["arn:aws:iam::111122223333:policy/PolicyA"]
+    sa_name     = "argo-server"
+    namespace   = "argo"
   },
   {
-    name            = "prometheus"
-    namespace       = "monitoring"
-    service_account = "prometheus"
-    iam_role_arn    = "arn:aws:iam::123456789012:role/prometheus-role"
+    name        = "role-prod"
+    policy_arns = ["arn:aws:iam::111122223333:policy/PolicyC"]
+    sa_name     = "app-sa"
+    namespace   = "prod"
   },
   {
-    name            = "app-backend"
-    namespace       = "backend"
-    service_account = "app-sa"
-    iam_role_arn    = "arn:aws:iam::123456789012:role/app-s3-reader"
+    name        = "role-monitoring"
+    policy_arns = [
+      "arn:aws:iam::111122223333:policy/CloudWatchPolicy",
+      "arn:aws:iam::111122223333:policy/EC2ReadOnlyPolicy"
+    ]
+    sa_name     = "monitoring-sa"
+    namespace   = "monitoring"
   }
 ]

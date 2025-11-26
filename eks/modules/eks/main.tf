@@ -201,6 +201,8 @@ resource "aws_eks_cluster" "this" {
     ignore_changes = [
       access_config[0].bootstrap_cluster_creator_admin_permissions,
       bootstrap_self_managed_addons,
+      vpc_config[0].endpoint_private_access,
+      vpc_config[0].endpoint_public_access
     ]
   }
 }

@@ -32,7 +32,7 @@ module "eks" {
   create_node_security_group = false
 
   # パブリックアクセス指定
-  endpoint_public_access_cidrs = var.endpoint_public_access_cidrs
+  endpoint_public_access_cidrs = length(var.endpoint_public_access_cidrs) > 0 ? var.endpoint_public_access_cidrs : ["0.0.0.0/0"]
 
   cloudwatch_log_group_retention_in_days = 30
 

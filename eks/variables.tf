@@ -60,7 +60,7 @@ variable "efs_csi_driver_version" {
 variable "endpoint_public_access_cidrs" {
   description = "endpoint public access cidrs"
   type        = list(string)
-  #default     = ["0.0.0.0/0"]
+  default     = ["0.0.0.0/0"]
 }
 
 # cluster security group

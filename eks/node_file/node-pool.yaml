@@ -11,10 +11,6 @@ spec:
         kind: NodeClass
         name: "${node_class_name}" 
       requirements:
-        - key: "karpenter.sh/capacity-type"
-          operator: In
-          values: ["${capacity_type}"]
-        - key: "eks.amazonaws.com/instance-category"
           operator: In
           values: ["${instance_category}"]
         - key: "eks.amazonaws.com/instance-cpu"
@@ -23,6 +19,8 @@ spec:
         - key: "kubernetes.io/arch"
           operator: In
           values: ["${instance_architecture}"]
+      labels:
+        node_class: "${node_class_name}" 
   limits:
     cpu: "256"
     memory: 512Gi

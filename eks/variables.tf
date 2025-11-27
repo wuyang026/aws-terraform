@@ -26,35 +26,9 @@ variable "cluster_k8s_version" {
   default     = "1.34"
 }
 
-variable "instance_cpu" {
-  description = "Instance cpus  used to node pools"
-  type        = list(string)
-}
-
-variable "instance_category" {
-  description = "Instance category  used to node pools"
-  type        = list(string)
-}
-
-variable "instance_architecture" {
-  description = "Instance architecture  used to node pools"
-  type        = list(string)
-}
-
-variable "capacity_type" {
-  description = "Instance apacity type  used to node pools"
-  type        = list(string)
-}
-
 variable "existing_vpc_id" {
   description = "VPC id"
   type        = string
-}
-
-variable "efs_csi_driver_version" {
-  description = "EFS CSI Driver Version"
-  type        = string
-  default     = "v2.1.12-eksbuild.1"
 }
 
 variable "endpoint_public_access_cidrs" {

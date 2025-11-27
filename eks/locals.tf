@@ -21,7 +21,6 @@ locals {
 
       node_pool_name     = "${local.cluster_name}-frontend-nodepool"
       instance_cpu       = ["2", "4"]
-      capacity_type      = ["spot","on-demand"]
       instance_category  = ["m","c","r"]
       instance_arch      = ["amd64"]
     },
@@ -32,7 +31,6 @@ locals {
 
       node_pool_name     = "${local.cluster_name}-backend-nodepool"
       instance_cpu       = ["2", "4"]
-      capacity_type      = ["spot","on-demand"]
       instance_category  = ["m","c","r"]
       instance_arch      = ["amd64"]
     }

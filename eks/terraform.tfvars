@@ -18,12 +18,3 @@ node_sg_ingress_rules = [
 
 # public endpoint access cidrs
 endpoint_public_access_cidrs = []
-
-# efs csi driver version
-efs_csi_driver_version = "v2.1.13-eksbuild.1"
-
-# node pool Variables
-instance_architecture = ["amd64"]
-capacity_type = ["spot","on-demand"]
-instance_cpu = ["2","4","8","16"]
-instance_category = ["c","m","r"]

@@ -41,7 +41,6 @@ resource "kubectl_manifest" "karpenter_node_pool" {
     node_pool_name        = each.value.node_pool_name
     instance_cpu          = join("\", \"", each.value.instance_cpu)
     instance_category     = join("\", \"", each.value.instance_category)
-    capacity_type         = join("\", \"", each.value.capacity_type)
     instance_architecture = join("\", \"", each.value.instance_arch)
   })
 

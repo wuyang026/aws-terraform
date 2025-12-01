@@ -1,15 +1,13 @@
 #########################################
 # IAM Role（EKS Pod Identity 用）
+# policy_arns がある場合のみ作成
 #########################################
-# ServiceAccount に対応する IAM Role を作成
-# ※これは IRSA ではなく、EKS Pod Identity 専用の AssumeRole 設定
 resource "aws_iam_role" "role" {
-  for_each = { for r in var.sa_roles : r.role_name => r }
+  for_each = { for r in var.sa_roles : r.role_name => r if r.policy_arns != null && length(r.policy_arns) > 0 }
 
   name = each.value.role_name
 
   # EKS Pod がこの IAM Role を引き受けるためのポリシー
-  # Principal.Service = "pods.eks.amazonaws.com" は Pod Identity 専用
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -30,23 +28,22 @@ EOF
 }
 
 #########################################
-# Role × Policy の組み合わせをフラット化
+# Role × Policy の組み合わせをフラット化（policy_arns がある場合のみ）
 #########################################
 locals {
   role_policy_map = flatten([
-    for r in var.sa_roles : [
+    for r in var.sa_roles : r.policy_arns != null ? [
       for p in r.policy_arns : {
         role_name  = r.role_name
         policy_arn = p
       }
-    ]
+    ] : []
   ])
 }
 
 #########################################
-# IAM Policy を Role にアタッチ
+# IAM Policy を Role にアタッチ（policy_arns がある場合のみ）
 #########################################
-# 既存の IAM Policy を IAM Role に紐付ける
 resource "aws_iam_role_policy_attachment" "attach" {
   for_each = { for rp in local.role_policy_map : "${rp.role_name}-${replace(rp.policy_arn, "[:/]", "-")}" => rp }
 
@@ -64,7 +61,6 @@ locals {
 #########################################
 # Kubernetes ServiceAccount を作成
 #########################################
-# ※Pod Identity の場合、annotation は必須ではないが残しても問題なし
 resource "kubernetes_service_account_v1" "sa" {
   for_each = local.sa_map
 
@@ -73,22 +69,25 @@ resource "kubernetes_service_account_v1" "sa" {
     namespace = each.value.namespace
 
     annotations = {
-      # IRSA と互換性のために残す（Pod Identity の場合は実際には使用されない）
-      "eks.amazonaws.com/role-arn" = aws_iam_role.role[each.key].arn
+      # IRSA / Pod Identity 互換
+      # IAM Role を作成した場合は aws_iam_role.role[each.key].arn を使用
+      # それ以外は既存の role_name を直接使用
+      "eks.amazonaws.com/role-arn" = lookup(
+        aws_iam_role.role, each.key, null
+      ) != null ? aws_iam_role.role[each.key].arn : each.value.role_name
     }
   }
 }
 
 #########################################
-# EKS Pod Identity Association（最重要）
+# EKS Pod Identity Association
 #########################################
-# Pod と IAM Role を正式に紐付ける設定
-# これを作らないと Pod Identity は動作しない
 resource "aws_eks_pod_identity_association" "this" {
   for_each = local.sa_map
 
-  cluster_name     = data.terraform_remote_state.eks.outputs.cluster_name      # EKS クラスター名
-  namespace        = each.value.namespace   # ServiceAccount の Namespace
-  service_account  = each.value.sa_name     # ServiceAccount 名
-  role_arn         = aws_iam_role.role[each.key].arn
+  cluster_name     = data.terraform_remote_state.eks.outputs.cluster_name
+  namespace        = each.value.namespace
+  service_account  = each.value.sa_name
+  # IAM Role が作成された場合は arn を使用、それ以外は既存の role_name を使用
+  role_arn         = lookup(aws_iam_role.role, each.key, null) != null ? aws_iam_role.role[each.key].arn : each.value.role_name
 }

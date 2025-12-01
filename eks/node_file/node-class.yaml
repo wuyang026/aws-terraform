@@ -41,3 +41,12 @@ spec:
   # tags:
   #   Environment: "production"
   #   Team: "platform"
+  configuration:
+    settings:
+      kubernetes:
+        kubeReserved:
+          cpu: "1000m"
+          memory: "1Gi"
+        systemReserved:
+          cpu: "500m"
+          memory: "512Mi

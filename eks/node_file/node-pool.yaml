@@ -19,8 +19,6 @@ spec:
         - key: "kubernetes.io/arch"
           operator: In
           values: ["${instance_architecture}"]
-      labels:
-        node_class: "${node_class_name}" 
   limits:
     cpu: "256"
     memory: 512Gi

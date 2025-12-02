@@ -17,7 +17,7 @@ locals {
     nodepool_forntend = {
       node_class_name    = "${local.cluster_name}-frontend-nodeclass"
       private_subnet_ids = ["subnet-02728cb43841d0c6d", "subnet-023bc916f5ccaf069"]
-      eks_node_sg_ids    = ["sg-0e3e3b49f6457df34"]
+      eks_node_sg_ids    = ["sg-0a76ba07092c608c1"]
 
       node_pool_name     = "${local.cluster_name}-frontend-nodepool"
       instance_cpu       = ["2", "4"]
@@ -27,7 +27,7 @@ locals {
     nodepool_backend = {
       node_class_name    = "${local.cluster_name}-backend-nodeclass"
       private_subnet_ids = ["subnet-0ad69bf299f445cbe"]
-      eks_node_sg_ids    = ["sg-0e3e3b49f6457df34"]
+      eks_node_sg_ids    = ["sg-0a76ba07092c608c1"]
 
       node_pool_name     = "${local.cluster_name}-backend-nodepool"
       instance_cpu       = ["2", "4"]

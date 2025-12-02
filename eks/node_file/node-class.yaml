@@ -45,8 +45,8 @@ spec:
     settings:
       kubernetes:
         kubeReserved:
-          cpu: "1000m"
-          memory: "1Gi"
+          cpu: "1200m"
+          memory: "1.5Gi"
         systemReserved:
-          cpu: "500m"
-          memory: "512Mi
+          cpu: "800m"
+          memory: "1Gi"

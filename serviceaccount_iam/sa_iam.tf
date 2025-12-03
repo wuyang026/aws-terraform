@@ -75,11 +75,7 @@ resource "kubernetes_service_account_v1" "sa" {
     namespace = each.value.namespace
 
     annotations = {
-      # IAM Role は作成されたものを優先し、なければ外部提供の role_arn を使用
-      "eks.amazonaws.com/role-arn" =
-        lookup(aws_iam_role.role, each.key, null) != null
-        ? aws_iam_role.role[each.key].arn
-        : each.value.role_arn
+       "eks.amazonaws.com/role-arn" = lookup(aws_iam_role.role, each.key, null) != null ? aws_iam_role.role[each.key].arn : each.value.role_arn
     }
   }
 }
@@ -96,6 +92,5 @@ resource "aws_eks_pod_identity_association" "this" {
   namespace        = each.value.namespace
   service_account  = each.value.sa_name
 
-  # IAM Role は作成されたものを優先
   role_arn = lookup(aws_iam_role.role, each.key, null) != null ? aws_iam_role.role[each.key].arn : each.value.role_arn
 }

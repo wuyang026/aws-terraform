@@ -1,13 +1,14 @@
 #########################################
-# IAM Role（EKS Pod Identity 用）
-# policy_arns がある場合のみ作成
+# 1. IAM Roleを作成（role_nameが定義され、policy_arnsがある場合のみ作成）
 #########################################
 resource "aws_iam_role" "role" {
-  for_each = { for r in var.sa_roles : r.role_name => r if r.policy_arns != null && length(r.policy_arns) > 0 }
+  for_each = {
+    for r in var.sa_roles : r.sa_name => r
+    if contains(keys(r), "role_name") && r.role_name != null && r.policy_arns != null && length(r.policy_arns) > 0
+  }
 
   name = each.value.role_name
 
-  # EKS Pod がこの IAM Role を引き受けるためのポリシー
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -28,66 +29,76 @@ EOF
 }
 
 #########################################
-# Role × Policy の組み合わせをフラット化（policy_arns がある場合のみ）
+# 2. IAM PolicyをRoleにアタッチ（role_nameがある場合のみ）
 #########################################
 locals {
   role_policy_map = flatten([
-    for r in var.sa_roles : r.policy_arns != null ? [
+    for r in var.sa_roles : contains(keys(r), "role_name") && r.role_name != null && r.policy_arns != null ? [
       for p in r.policy_arns : {
-        role_name  = r.role_name
+        sa_name    = r.sa_name
         policy_arn = p
       }
     ] : []
   ])
 }
 
-#########################################
-# IAM Policy を Role にアタッチ（policy_arns がある場合のみ）
-#########################################
 resource "aws_iam_role_policy_attachment" "attach" {
-  for_each = { for rp in local.role_policy_map : "${rp.role_name}-${replace(rp.policy_arn, "[:/]", "-")}" => rp }
+  for_each = { for rp in local.role_policy_map : "${rp.sa_name}-${replace(rp.policy_arn, "[:/]", "-")}" => rp }
 
-  role       = aws_iam_role.role[each.value.role_name].name
+  role       = aws_iam_role.role[each.value.sa_name].name
   policy_arn = each.value.policy_arn
 }
 
 #########################################
-# ServiceAccount 定義の Map
+# 3. Kubernetes ServiceAccountの存在チェック
 #########################################
+data "external" "sa_exists" {
+  for_each = { for r in var.sa_roles : r.sa_name => r }
+
+  program = ["bash", "-c", <<EOT
+if kubectl get sa ${each.value.sa_name} -n ${each.value.namespace} >/dev/null 2>&1; then
+  echo '{"exists":"true"}'
+else
+  echo '{"exists":"false"}'
+fi
+EOT
+  ]
+}
+
 locals {
-  sa_map = { for r in var.sa_roles : r.role_name => r }
+  sa_exists_map = {
+    for r in var.sa_roles :
+    r.sa_name => data.external.sa_exists[r.sa_name].result.exists
+  }
 }
 
 #########################################
-# Kubernetes ServiceAccount を作成
+# 4. 存在しないServiceAccountのみ作成
 #########################################
 resource "kubernetes_service_account_v1" "sa" {
-  for_each = local.sa_map
+  for_each = {
+    for r in var.sa_roles :
+    r.sa_name => r if local.sa_exists_map[r.sa_name] == "false"
+  }
 
   metadata {
     name      = each.value.sa_name
     namespace = each.value.namespace
 
     annotations = {
-      # IRSA / Pod Identity 互換
-      # IAM Role を作成した場合は aws_iam_role.role[each.key].arn を使用
-      # それ以外は既存の role_name を直接使用
-      "eks.amazonaws.com/role-arn" = lookup(
-        aws_iam_role.role, each.key, null
-      ) != null ? aws_iam_role.role[each.key].arn : each.value.role_name
+      "eks.amazonaws.com/role-arn" = lookup(aws_iam_role.role, each.key, null) != null ? aws_iam_role.role[each.key].arn : each.value.role_arn
     }
   }
 }
 
 #########################################
-# EKS Pod Identity Association
+# 5. EKS Pod Identity Associationを作成
 #########################################
 resource "aws_eks_pod_identity_association" "this" {
-  for_each = local.sa_map
+  for_each = { for r in var.sa_roles : r.sa_name => r }
 
   cluster_name     = data.terraform_remote_state.eks.outputs.cluster_name
   namespace        = each.value.namespace
   service_account  = each.value.sa_name
-  # IAM Role が作成された場合は arn を使用、それ以外は既存の role_name を使用
-  role_arn         = lookup(aws_iam_role.role, each.key, null) != null ? aws_iam_role.role[each.key].arn : each.value.role_name
+  role_arn         = lookup(aws_iam_role.role, each.key, null) != null ? aws_iam_role.role[each.key].arn : each.value.role_arn
 }

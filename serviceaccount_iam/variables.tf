@@ -1,7 +1,8 @@
 variable "sa_roles" {
   type = list(object({
-    role_name   = string
-    policy_arns = list(string)
+    role_name   = optional(string)
+    role_arn    = optional(string)
+    policy_arns = optional(list(string))
     sa_name     = string
     namespace   = string
   }))

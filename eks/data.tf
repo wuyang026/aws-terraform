@@ -10,3 +10,5 @@ data "aws_eks_addon_version" "cloudwatch_observability" {
   kubernetes_version  = module.eks.cluster_version
   most_recent         = true
 }
+
+data "aws_caller_identity" "current" {}

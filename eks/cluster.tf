@@ -13,13 +13,17 @@ module "eks" {
   enable_cluster_creator_admin_permissions = true
   create_auto_mode_iam_resources           = true
 
-  # kms無効
+  # kms無効 カスタマイズkms指定
   create_kms_key = false
-  encryption_config = null
+  encryption_config = {
+    resources = ["secrets"]
+    provider_key_arn  = aws_kms_key.eks.arn
+  }
 
   compute_config = {
     enabled    = true
   }
+  
 
   vpc_id                    = var.existing_vpc_id
   subnet_ids                = data.aws_subnets.private_subnets.ids
@@ -38,5 +42,5 @@ module "eks" {
 
   tags = local.common_tags
 
-  depends_on = [aws_security_group.eks_cluster_sg,aws_security_group.eks_node_sg]
+  depends_on = [aws_security_group.eks_cluster_sg,aws_security_group.eks_node_sg,aws_kms_key_policy.eks_policy]
 }

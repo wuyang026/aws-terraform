@@ -38,3 +38,13 @@ output "eks_node_sg_id" {
   value       = aws_security_group.eks_node_sg.id
   description = "ID of the EKS node group security group"
 }
+
+output "kms_key_arn" {
+  value       = aws_kms_key.eks.arn
+  description = "The ARN of the KMS key used by EKS"
+}
+
+output "kms_key_rotation_enabled" {
+  value       = aws_kms_key.eks.enable_key_rotation
+  description = "Whether automatic key rotation is enabled for the KMS key"
+}

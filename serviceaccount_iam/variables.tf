@@ -4,6 +4,7 @@ variable "sa_roles" {
     role_arn    = optional(string)
     policy_arns = optional(list(string))
     sa_name     = string
+    sa_exists   = bool
     namespace   = string
   }))
 }

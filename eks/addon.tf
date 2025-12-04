@@ -2,12 +2,20 @@
 resource "kubectl_manifest" "sample_pod" {
   yaml_body = file("${path.module}/node_file/sample_pod.yaml")
   depends_on = [kubectl_manifest.karpenter_node_pool]
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 # ノードの起動が完了するまで待機
 resource "time_sleep" "node_create" {
   depends_on = [kubectl_manifest.sample_pod]
   create_duration = "60s"
+  
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 # EFS CSIドライバーインストール

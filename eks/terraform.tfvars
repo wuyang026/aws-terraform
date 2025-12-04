@@ -18,3 +18,6 @@ node_sg_ingress_rules = [
 
 # public endpoint access cidrs
 endpoint_public_access_cidrs = []
+
+# cloudwatchログをS3に転送先(bucket名を指定)
+logging_s3_bucket_name = "go-ph2-01-dev-eks-cluster-bucket"

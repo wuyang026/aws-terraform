@@ -60,3 +60,10 @@ variable "node_sg_ingress_rules" {
   }))
   default = []
 }
+
+# logging s3
+variable "logging_s3_bucket_name" {
+  description = "logging s3 bucket name"
+  type        = string
+  default     = ""
+}

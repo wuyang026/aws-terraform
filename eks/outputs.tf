@@ -48,3 +48,11 @@ output "kms_key_rotation_enabled" {
   value       = aws_kms_key.eks.enable_key_rotation
   description = "Whether automatic key rotation is enabled for the KMS key"
 }
+
+output "logging_s3_bucket_name" {
+  value = data.aws_s3_bucket.existing.bucket
+}
+
+output "firehose_stream" {
+  value = aws_kinesis_firehose_delivery_stream.cw_to_s3.name
+}

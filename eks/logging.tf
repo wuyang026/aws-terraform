@@ -139,6 +139,15 @@ resource "aws_kinesis_firehose_delivery_stream" "cw_to_s3" {
   }
 }
 
+resource "time_sleep" "waiting_log_group_create" {
+  depends_on = [aws_eks_addon.cloudwatch_observability]
+  create_duration = "120s"
+  
+  lifecycle {
+    ignore_changes = all
+  }
+}
+
 #############################################
 # ログ保持期間を設定（30日）
 #############################################
@@ -153,7 +162,7 @@ aws logs put-retention-policy \
 EOF
   }
   depends_on = [
-    aws_eks_addon.cloudwatch_observability
+    time_sleep.waiting_log_group_create
   ]
 }
 
@@ -170,8 +179,6 @@ resource "aws_cloudwatch_log_subscription_filter" "eks_to_s3" {
   role_arn        = aws_iam_role.cwlogs_to_firehose_role.arn
 
   depends_on = [
-    aws_kinesis_firehose_delivery_stream.cw_to_s3,
-    null_resource.cwlogs_resource_policy,
-    aws_eks_addon.cloudwatch_observability
+    time_sleep.waiting_log_group_create
   ]
 }

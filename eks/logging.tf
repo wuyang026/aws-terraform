@@ -140,34 +140,10 @@ resource "aws_kinesis_firehose_delivery_stream" "cw_to_s3" {
 }
 
 #############################################
-# Container Insights のロググループ取得
-#############################################
-data "aws_cloudwatch_log_groups" "container_insights" {
-  log_group_name_prefix = "/aws/containerinsights/${local.cluster_name}/"
-}
-
-#############################################
-# EKS クラスターのロググループ取得
-#############################################
-data "aws_cloudwatch_log_groups" "eks_cluster" {
-  log_group_name_prefix = "/aws/eks/${local.cluster_name}/"
-}
-
-#############################################
-# すべてのロググループを統合
-#############################################
-locals {
-  all_log_groups = concat(
-    tolist(data.aws_cloudwatch_log_groups.container_insights.log_group_names),
-    tolist(data.aws_cloudwatch_log_groups.eks_cluster.log_group_names)
-  )
-}
-
-#############################################
 # ログ保持期間を設定（30日）
 #############################################
 resource "null_resource" "update_retention" {
-  for_each = toset(local.all_log_groups)
+  for_each = toset(local.log_groups)
 
   provisioner "local-exec" {
     command = <<EOF
@@ -185,7 +161,7 @@ EOF
 # CloudWatch Logs → Firehose → S3 サブスクリプションフィルター
 #############################################
 resource "aws_cloudwatch_log_subscription_filter" "eks_to_s3" {
-  for_each = toset(local.all_log_groups)
+  for_each = toset(local.log_groups)
 
   name            = "${basename(each.value)}-to-firehose"
   log_group_name  = each.value

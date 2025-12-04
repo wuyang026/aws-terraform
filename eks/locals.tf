@@ -35,4 +35,13 @@ locals {
       instance_arch      = ["amd64"]
     }
   }
+
+  # cloudwatch log groups → s3
+  log_groups = [
+    "/aws/containerinsights/${local.cluster_name}/application",
+    "/aws/containerinsights/${local.cluster_name}/dataplane",
+    "/aws/containerinsights/${local.cluster_name}/host",
+    "/aws/containerinsights/${local.cluster_name}/performance",
+    "/aws/eks/${local.cluster_name}/cluster"
+  ]
 } 

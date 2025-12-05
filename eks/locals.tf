@@ -37,11 +37,13 @@ locals {
   }
 
   # cloudwatch log groups → s3
+  # cloudwatch ログ保存期間 retention設定値(1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653)日
+  # 最大10年
   log_groups = [
-    "/aws/containerinsights/${local.cluster_name}/application",
-    "/aws/containerinsights/${local.cluster_name}/dataplane",
-    "/aws/containerinsights/${local.cluster_name}/host",
-    "/aws/containerinsights/${local.cluster_name}/performance",
-    "/aws/eks/${local.cluster_name}/cluster"
+    { name = "/aws/containerinsights/${local.cluster_name}/application", retention = 30 },
+    { name = "/aws/containerinsights/${local.cluster_name}/dataplane", retention = 30 },
+    { name = "/aws/containerinsights/${local.cluster_name}/host", retention = 30 },
+    { name = "/aws/containerinsights/${local.cluster_name}/performance", retention = 30 },
+    { name = "/aws/eks/${local.cluster_name}/cluster", retention = 30 },
   ]
 } 

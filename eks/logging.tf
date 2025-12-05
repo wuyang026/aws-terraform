@@ -149,18 +149,23 @@ resource "time_sleep" "waiting_log_group_create" {
 }
 
 #############################################
-# ログ保持期間を設定（30日）
+# ログ保持期間を設定
 #############################################
 resource "null_resource" "update_retention" {
-  for_each = toset(local.log_groups)
+  for_each = { for lg in local.log_groups : lg.name => lg }
+
+  triggers = {
+    retention = tostring(each.value.retention)
+  }
 
   provisioner "local-exec" {
     command = <<EOF
 aws logs put-retention-policy \
-  --log-group-name "${each.value}" \
-  --retention-in-days 30
+  --log-group-name "${each.value.name}" \
+  --retention-in-days ${each.value.retention}
 EOF
   }
+
   depends_on = [
     time_sleep.waiting_log_group_create
   ]
@@ -170,10 +175,10 @@ EOF
 # CloudWatch Logs → Firehose → S3 サブスクリプションフィルター
 #############################################
 resource "aws_cloudwatch_log_subscription_filter" "eks_to_s3" {
-  for_each = toset(local.log_groups)
+  for_each = { for lg in local.log_groups : lg.name => lg }
 
-  name            = "${basename(each.value)}-to-firehose"
-  log_group_name  = each.value
+  name            = "${basename(each.value.name)}-to-firehose"
+  log_group_name  = each.value.name
   filter_pattern  = ""
   destination_arn = aws_kinesis_firehose_delivery_stream.cw_to_s3.arn
   role_arn        = aws_iam_role.cwlogs_to_firehose_role.arn

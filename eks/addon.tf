@@ -1,23 +1,3 @@
-# EKSアドオンのインストール時に異常が発生しないように、自動で削除されるPodを作成し、ノードを起動
-resource "kubectl_manifest" "sample_pod" {
-  yaml_body = file("${path.module}/node_file/sample_pod.yaml")
-  depends_on = [kubectl_manifest.karpenter_node_pool]
-
-  lifecycle {
-    ignore_changes = all
-  }
-}
-
-# ノードの起動が完了するまで待機
-resource "time_sleep" "node_create" {
-  depends_on = [kubectl_manifest.sample_pod]
-  create_duration = "60s"
-  
-  lifecycle {
-    ignore_changes = all
-  }
-}
-
 # EFS CSIドライバーインストール
 module "aws_efs_csi_pod_identity" {
   #source  = "terraform-aws-modules/eks-pod-identity/aws"
@@ -30,7 +10,7 @@ module "aws_efs_csi_pod_identity" {
   additional_policy_arns = {
     AmazonEFSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
   }
-  depends_on = [time_sleep.node_create]
+  depends_on = [kubectl_manifest.karpenter_node_pool]
 }
 
 resource "aws_eks_pod_identity_association" "efs_csi" {
@@ -67,7 +47,7 @@ module "aws_cloudwatch_observability_pod_identity" {
       CloudWatchAgentServerPolicy = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
       AWSXrayWriteOnlyAccess      = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
   }
-  depends_on = [time_sleep.node_create]
+  depends_on = [kubectl_manifest.karpenter_node_pool]
 }
 
 resource "aws_eks_pod_identity_association" "cloudwatch_observability" {

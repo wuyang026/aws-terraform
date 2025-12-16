@@ -1,14 +1,22 @@
+locals {
+  config_exists = data.external.config_exists.result["config_exists"]
+}
+
 ################################
 # 1. AWS Config 用 S3 バケット
 ################################
 resource "aws_s3_bucket" "config" {
+  count = local.config_exists ? 0 : 1
+
   bucket = "aws-config-${data.aws_caller_identity.current.account_id}-${var.aws_region}-bucket"
 
   force_destroy = true
 }
 
 resource "aws_s3_bucket_versioning" "config" {
-  bucket = aws_s3_bucket.config.id
+  count = local.config_exists ? 0 : 1
+
+  bucket = aws_s3_bucket.config[0].id
 
   versioning_configuration {
     status = "Enabled"
@@ -19,7 +27,9 @@ resource "aws_s3_bucket_versioning" "config" {
 # 2. AWS Config 用 S3 バケットポリシー
 ################################
 resource "aws_s3_bucket_policy" "config" {
-  bucket = aws_s3_bucket.config.id
+  count = local.config_exists ? 0 : 1
+
+  bucket = aws_s3_bucket.config[0].id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -31,7 +41,7 @@ resource "aws_s3_bucket_policy" "config" {
           Service = "config.amazonaws.com"
         }
         Action   = "s3:GetBucketAcl"
-        Resource = aws_s3_bucket.config.arn
+        Resource = aws_s3_bucket.config[0].arn
       },
       {
         Sid    = "AWSConfigBucketDelivery"
@@ -40,7 +50,7 @@ resource "aws_s3_bucket_policy" "config" {
           Service = "config.amazonaws.com"
         }
         Action   = "s3:PutObject"
-        Resource = "${aws_s3_bucket.config.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/Config/*"
+        Resource = "${aws_s3_bucket.config[0].arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/Config/*"
         Condition = {
           StringEquals = {
             "s3:x-amz-acl" = "bucket-owner-full-control"
@@ -55,6 +65,8 @@ resource "aws_s3_bucket_policy" "config" {
 # 3. AWS Config 用 IAM ロール
 ################################
 resource "aws_iam_role" "config_role" {
+  count = local.config_exists ? 0 : 1
+
   name = "AWS-Config-Role"
 
   assume_role_policy = jsonencode({
@@ -72,7 +84,8 @@ resource "aws_iam_role" "config_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "config_policy" {
-  role       = aws_iam_role.config_role.name
+  count = local.config_exists ? 0 : 1
+  role       = aws_iam_role.config_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWS_ConfigRole"
 }
 
@@ -80,8 +93,10 @@ resource "aws_iam_role_policy_attachment" "config_policy" {
 # 4. AWS Config Configuration Recorder
 ################################
 resource "aws_config_configuration_recorder" "this" {
+  count = local.config_exists ? 0 : 1
+
   name     = "default"
-  role_arn = aws_iam_role.config_role.arn
+  role_arn = aws_iam_role.config_role[0].arn
 
   recording_group {
     all_supported                 = true
@@ -93,8 +108,10 @@ resource "aws_config_configuration_recorder" "this" {
 # 5. AWS Config Delivery Channel
 ################################
 resource "aws_config_delivery_channel" "this" {
+  count = local.config_exists ? 0 : 1
+
   name           = "default"
-  s3_bucket_name = aws_s3_bucket.config.bucket
+  s3_bucket_name = aws_s3_bucket.config[0].bucket
 
   depends_on = [
     aws_s3_bucket_policy.config,
@@ -106,7 +123,7 @@ resource "aws_config_delivery_channel" "this" {
 # 6. AWS Config Recorder 有効化
 ################################
 resource "aws_config_configuration_recorder_status" "this" {
-  name       = aws_config_configuration_recorder.this.name
+  name       = "default"
   is_enabled = true
 
   depends_on = [

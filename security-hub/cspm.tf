@@ -1,5 +1,5 @@
 locals {
-  config_exists = data.external.config_exists.result["config_exists"]
+  config_exists = data.external.config_exists.result["config_exists"] == "true"
 }
 
 ################################

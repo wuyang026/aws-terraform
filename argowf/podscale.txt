@@ -13,3 +13,19 @@ kubectl patch ds fluent-bit -n amazon-cloudwatch -p '{"spec":{"template":{"spec"
 kubectl scale deploy amazon-cloudwatch-observability-controller-manager -n amazon-cloudwatch --replicas=1
 kubectl patch ds cloudwatch-agent -n amazon-cloudwatch -p '{"spec":{"template":{"spec":{"nodeSelector":null}}}}'
 kubectl patch ds fluent-bit -n amazon-cloudwatch -p '{"spec":{"template":{"spec":{"nodeSelector":null}}}}'
+
+
+
+aws eks update-addon \
+  --cluster-name go-ph2-01-dev-eks-cluster \
+  --addon-name aws-efs-csi-driver \
+  --addon-version v2.2.0-eksbuild.1 \
+  --service-account-role-arn arn:aws:iam::759348358497:role/go-ph2-01-dev-eks-cluster-efs-role-20260109122744243100000005 \
+  --resolve-conflicts OVERWRITE
+
+aws eks update-addon \
+  --cluster-name go-ph2-01-dev-eks-cluster \
+  --addon-name amazon-cloudwatch-observability \
+  --addon-version v4.8.0-eksbuild.1 \
+  --service-account-role-arn arn:aws:iam::759348358497:role/go-ph2-01-dev-eks-cluster-obs-role-20260109122744247000000006 \
+  --resolve-conflicts OVERWRITE
